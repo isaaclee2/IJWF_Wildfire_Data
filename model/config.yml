@@ -1,0 +1,30 @@
+seed: 42
+experiment:
+  checkpoint_interval: 1000
+data:
+  data_path: "/project2/aoberai_286/ihlee/flow_matching/mlp_code/datasets/wildfire_data.npz" #path to the data
+  save_path_normalization_scale_mean: "/project2/aoberai_286/ihlee/flow_matching/mlp_code/datasets" #path to save the normalization scale and mean
+  train_split: 0.9
+  normalized: False
+
+model:
+  width: 256
+  depth: 4
+  activation: "ReLU"
+  prior_to_posterior: false
+  bridge: false
+  OT : false
+  ot_method: "sinkhorn"
+  network_type: "modelNN2" #modelNN or modelNN2 or modelNN3
+
+training:
+  n_iters: 20000
+  save_freq: 2000
+  n_test_freq: 1
+  batch_size: 2000
+  lr: 1e-3
+
+sampling:
+  eval_data_path: "/..." #path to the data for evaluation during sampling
+  n_steps: 100
+  sample_batch_size: 1000
