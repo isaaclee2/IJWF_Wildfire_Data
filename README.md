@@ -13,18 +13,26 @@ This repository contains the training data and model code for a probabilistic su
 ```
 .
 ├── datasets/
-│   ├── wildfire_data.npz       # Training and test data (X_train, Y_train, X_test, Y_test)
-│   └── sensitivity_data.npz    # Data for sensitivity analysis
+│   ├── wildfire_data.npz               # Training and test data (X_train, Y_train, X_test, Y_test)
+│   └── sensitivity_data.npz            # Data for sensitivity analysis
+├── 24hr_test_data/
+│   ├── WEST_HEMP_test_data.npy         # Per-fire conditioning inputs for 24-hour rollouts
+│   ├── TUMTUM_test_data.npy
+│   └── ...                             # One .npy file per held-out test fire (12 total)
+├── normalization_data/
+│   ├── lognorm_x1_log_max.npy          # Log-normalization constants for output denormalization
+│   ├── lognorm_x2_log_max.npy
+│   └── lognorm_x3_log_max.npy
 ├── model/
-│   ├── flow.py                 # Flow matching model and neural network architectures
-│   ├── trainer.py              # Training and sampling routines
-│   ├── data_reader.py          # Data loading and normalization utilities
-│   ├── optimal_transport.py    # Optional OT plan sampler
-│   ├── config.yml              # Hyperparameters and paths
-│   └── environment.yml         # Conda environment specification
+│   ├── flow.py                         # Flow matching model and neural network architectures
+│   ├── trainer.py                      # Training and sampling routines
+│   ├── data_reader.py                  # Data loading and normalization utilities
+│   ├── optimal_transport.py            # Optional OT plan sampler
+│   ├── config.yml                      # Hyperparameters and paths
+│   └── environment.yml                 # Conda environment specification
 └── shell_scripts/
-    ├── run_train.sh            # SLURM job script for training
-    └── run_sample.sh           # SLURM job script for sampling/evaluation
+    ├── run_train.sh                    # SLURM job script for training
+    └── run_sample.sh                   # SLURM job script for sampling/evaluation
 ```
 
 ## Data
@@ -43,6 +51,8 @@ This repository contains the training data and model code for a probabilistic su
 **Outputs** (`Y`, dim=3): log-normalized change in fire area at 1, 2, and 3 hours beyond the current timestep. Invert with `exp(y * y_max) - 1` to recover acres.
 
 Data are derived from 152 WRF-SFIRE coupled atmosphere–wildfire simulations of 2023 CONUS wildfire events. 140 simulations are used for training and 12 are held out for testing. Each simulation is augmented with 10 random rotations and 10 forecast time samples, yielding 14,000 training samples and 1,200 test samples. See the paper (Section 2.4) for full details on normalization and data augmentation.
+
+`24hr_test_data/` contains the per-timestep conditioning inputs for each of the 12 held-out test fires, used for the autoregressive 24-hour rollouts in Section 3.3. `normalization_data/` contains the three log-normalization constants needed to convert model outputs back to acres during inference.
 
 ## Setup
 
